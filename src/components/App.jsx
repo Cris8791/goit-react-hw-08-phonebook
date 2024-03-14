@@ -1,70 +1,35 @@
-// App.jsx
-import React, { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import {
-  fetchContacts,
-  addContact,
-  deleteContact,
-  setFilter,
-} from '../redux/contactsSlice';
-import ContactForm from './ContactForm';
-import ContactList from './ContactList';
-import Filter from './Filter';
-import { nanoid } from 'nanoid';
+// src/components/App.js
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
+import RegisterPage from './RegisterPage';
+import LoginPage from './LoginPage';
+import ContactsPage from './ContactsPage';
+import Navigation from './Navigation';
+import PrivateRoute from './PrivateRoute';
+import { useSelector } from 'react-redux';
 
 const App = () => {
-  const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(fetchContacts());
-  }, [dispatch]);
-  const {
-    contacts: { items: contacts },
-    filter,
-  } = useSelector(state => state.contacts);
-
-  const handleAddContact = (name, number) => {
-    if (
-      contacts.some(
-        contact => contact.name.toLowerCase() === name.toLowerCase()
-      )
-    ) {
-      alert(`Contact with name "${name}" already exists!`);
-      return;
-    }
-
-    const newContact = {
-      id: nanoid(),
-      name,
-      number,
-    };
-
-    dispatch(addContact(newContact));
-  };
-
-  const handleDeleteContact = contactId => {
-    dispatch(deleteContact(contactId));
-  };
-
-  const handleFilterChange = event => {
-    dispatch(setFilter(event.target.value));
-  };
-
-  const filteredContacts = contacts.filter(contact =>
-    contact.name.toLowerCase().includes(filter.toLowerCase())
-  );
+  const isLoggedIn = useSelector(state => state.auth.isLoggedIn);
 
   return (
     <div>
-      <h1>Phonebook</h1>
-      <ContactForm onAddContact={handleAddContact} />
-      <h2>Contacts</h2>
-      <Filter value={filter} onChange={handleFilterChange} />
-      <ContactList
-        contacts={filteredContacts}
-        onDeleteContact={handleDeleteContact}
-      />
+      <Navigation />
+      <Routes>
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route
+          path="/contacts"
+          element={
+            <PrivateRoute isLoggedIn={isLoggedIn}>
+              <ContactsPage />
+            </PrivateRoute>
+          }
+        />
+        {/* Adăugați aici alte rute după caz */}
+      </Routes>
     </div>
   );
 };
 
 export default App;
+

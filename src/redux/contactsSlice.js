@@ -1,71 +1,79 @@
-// ContactSlice.js
+// src/redux/contactsSlice.js
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-// Acțiuni asincrone
 export const fetchContacts = createAsyncThunk(
-  'contacts/fetchAll',
-  async (_, { rejectWithValue }) => {
+  'contacts/fetchContacts',
+  async (_, { getState, rejectWithValue }) => {
+    const token = getState().auth.token;
     try {
       const response = await fetch(
-        'https://65e705e653d564627a8dab74.mockapi.io/api/v1/contacts'
+        'https://connections-api.herokuapp.com/contacts',
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       if (!response.ok) throw new Error('Failed to fetch contacts');
-      const data = await response.json();
-      return data;
+      const contacts = await response.json();
+      return contacts;
     } catch (error) {
-      return rejectWithValue(error.toString());
+      return rejectWithValue(error.message);
     }
   }
 );
 
 export const addContact = createAsyncThunk(
   'contacts/addContact',
-  async (contact, { rejectWithValue }) => {
+  async (contact, { getState, rejectWithValue }) => {
+    const token = getState().auth.token;
     try {
       const response = await fetch(
-        'https://65e705e653d564627a8dab74.mockapi.io/api/v1/contacts',
+        'https://connections-api.herokuapp.com/contacts',
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(contact),
         }
       );
       if (!response.ok) throw new Error('Failed to add contact');
-      const data = await response.json();
-      return data;
+      const newContact = await response.json();
+      return newContact;
     } catch (error) {
-      return rejectWithValue(error.toString());
+      return rejectWithValue(error.message);
     }
   }
 );
 
 export const deleteContact = createAsyncThunk(
   'contacts/deleteContact',
-  async (contactId, { rejectWithValue }) => {
+  async (contactId, { getState, rejectWithValue }) => {
+    const token = getState().auth.token;
     try {
       const response = await fetch(
-        `https://65e705e653d564627a8dab74.mockapi.io/api/v1/contacts/${contactId}`,
+        `https://connections-api.herokuapp.com/contacts/${contactId}`,
         {
           method: 'DELETE',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
       if (!response.ok) throw new Error('Failed to delete contact');
       return contactId;
     } catch (error) {
-      return rejectWithValue(error.toString());
+      return rejectWithValue(error.message);
     }
   }
 );
 
 const initialState = {
-  contacts: {
-    items: [],
-    isLoading: false,
-    error: null,
-  },
-  filter: '',
+  items: [],
+  isLoading: false,
+  error: null,
 };
 
 const contactsSlice = createSlice({
@@ -79,27 +87,18 @@ const contactsSlice = createSlice({
   extraReducers: builder => {
     builder
       .addCase(fetchContacts.pending, state => {
-        state.contacts.isLoading = true;
+        state.isLoading = true;
       })
       .addCase(fetchContacts.fulfilled, (state, action) => {
-        state.contacts.items = action.payload;
-        state.contacts.isLoading = false;
+        state.items = action.payload;
+        state.isLoading = false;
       })
       .addCase(fetchContacts.rejected, (state, action) => {
-        state.contacts.isLoading = false;
-        state.contacts.error = action.payload;
-      })
-      .addCase(addContact.fulfilled, (state, action) => {
-        state.contacts.items.push(action.payload);
-      })
-      .addCase(deleteContact.fulfilled, (state, action) => {
-        state.contacts.items = state.contacts.items.filter(
-          contact => contact.id !== action.payload
-        );
+        state.isLoading = false;
+        state.error = action.payload;
       });
   },
 });
 
 export const { setFilter } = contactsSlice.actions;
-
 export default contactsSlice.reducer;
