@@ -1,4 +1,3 @@
-// src/redux/contactsSlice.js
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 export const fetchContacts = createAsyncThunk(
@@ -79,11 +78,7 @@ const initialState = {
 const contactsSlice = createSlice({
   name: 'contacts',
   initialState,
-  reducers: {
-    setFilter: (state, action) => {
-      state.filter = action.payload;
-    },
-  },
+  reducers: {},
   extraReducers: builder => {
     builder
       .addCase(fetchContacts.pending, state => {
@@ -96,9 +91,14 @@ const contactsSlice = createSlice({
       .addCase(fetchContacts.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
+      })
+      .addCase(addContact.fulfilled, (state, action) => {
+        state.items.push(action.payload);
+      })
+      .addCase(deleteContact.fulfilled, (state, action) => {
+        state.items = state.items.filter(item => item.id !== action.payload);
       });
   },
 });
 
-export const { setFilter } = contactsSlice.actions;
 export default contactsSlice.reducer;
