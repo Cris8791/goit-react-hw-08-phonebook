@@ -45,7 +45,8 @@ export const logIn = createAsyncThunk(
           body: JSON.stringify(userData),
         }
       );
-      if (!response.ok) throw new Error('Failed to login');
+      if (!response.ok)
+        throw new Error('Wrong email or password. Failed to login');
       const data = await response.json();
       return data;
     } catch (error) {

@@ -1,4 +1,3 @@
-// src/components/RegisterPage.js
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { register } from '../redux/authSlice';
@@ -9,6 +8,7 @@ const RegisterPage = () => {
     email: '',
     password: '',
   });
+  const [passwordError, setPasswordError] = useState('');
   const dispatch = useDispatch();
 
   const handleChange = e => {
@@ -17,10 +17,21 @@ const RegisterPage = () => {
       ...prevUserData,
       [name]: value,
     }));
+    if (name === 'password') {
+      if (value.length < 7 && value.length > 0) {
+        setPasswordError('Password must be at least 7 characters long.');
+      } else {
+        setPasswordError('');
+      }
+    }
   };
 
   const handleSubmit = e => {
     e.preventDefault();
+    if (userData.password.length < 7) {
+      setPasswordError('Password must be at least 7 characters long.');
+      return; // Stop the form submission if the password is too short
+    }
     dispatch(register(userData));
   };
 
@@ -55,6 +66,7 @@ const RegisterPage = () => {
           onChange={handleChange}
           required
         />
+        <div style={{ color: 'red' }}>{passwordError}</div>
       </label>
       <button type="submit">Register</button>
     </form>
