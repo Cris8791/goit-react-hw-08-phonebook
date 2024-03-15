@@ -81,7 +81,7 @@ const initialState = {
   user: null,
   token: null,
   isLoggedIn: false,
-  status: 'idle', // 'idle', 'loading', 'succeeded', 'failed'
+  status: 'idle',
   error: null,
 };
 

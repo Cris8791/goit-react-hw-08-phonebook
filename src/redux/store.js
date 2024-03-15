@@ -16,14 +16,14 @@ import storage from 'redux-persist/lib/storage';
 import authReducer from './authSlice';
 
 const rootReducer = combineReducers({
-  contacts: contactsReducer, // reducerii tăi
+  contacts: contactsReducer,
   auth: authReducer,
 });
 
 const persistConfig = {
   key: 'root',
   storage,
-  blacklist: ['contacts'], // Adaugă acest rând pentru a exclude reducerul contacts din persistență
+  blacklist: ['contacts'],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

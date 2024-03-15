@@ -25,7 +25,6 @@ const App = () => {
             </PrivateRoute>
           }
         />
-        {/* Adăugați aici alte rute după caz */}
       </Routes>
     </div>
   );

@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { register } from '../redux/authSlice';
 
 const RegisterPage = () => {
@@ -9,7 +10,15 @@ const RegisterPage = () => {
     password: '',
   });
   const [passwordError, setPasswordError] = useState('');
+  const isLoggedIn = useSelector(state => state.auth.isLoggedIn);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigate('/contacts'); // Redirecționarea după înregistrare
+    }
+  }, [isLoggedIn, navigate]);
 
   const handleChange = e => {
     const { name, value } = e.target;

@@ -31,7 +31,7 @@ const LoginPage = () => {
     e.preventDefault();
     if (credentials.password.length < 7) {
       setLoginError('Password must be at least 7 characters long.');
-      return; // Opriți trimiterea formularului dacă parola este prea scurtă
+      return;
     }
     dispatch(logIn(credentials));
   };
